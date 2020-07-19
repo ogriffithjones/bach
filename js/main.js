@@ -610,7 +610,7 @@ function daysBetween(firstDate, secondDate) {
     var days = millisBetween / (1000 * 3600 * 24);
 
     return Math.round(Math.abs(days));
-}
+};
 
 // On form home form submit
 function home_submitForm() {
@@ -687,7 +687,7 @@ function getListings(city) {
     // }
 
     // $('#listings').append(html);
-}
+};
 
 function search() {
     var searchObject = '#search_city';
@@ -709,19 +709,22 @@ function search() {
         // Update booking location
         booking.location = value;
     });
-}
+};
 
 function view_listings() {
     search()
     getListings(booking.location)
+};
 
-    // var link = `https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features`;
+// =================================================================
+// 
+//                                Nav
+// 
+// =================================================================
 
-    // $.get(link, function (data, status) {
-    //     console.log(data);
-    //     return data;
-    // });
-}
+function nav() {
+    var navObject = '#nav';
+};
 
 // =================================================================
 // 
@@ -732,7 +735,9 @@ function view_listings() {
 function App() {
     // Load home view
     view_home();
-}
+    // Load nav systems
+    nav();
+};
 
 // Onload
 App();
