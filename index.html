@@ -15,11 +15,15 @@
     <script src="./js/fecha.min.js"></script>
     <script src="./js/hotel-datepicker.min.js"></script>
 
+    <!-- Hammer JS -->
+    <script defer src='https://hammerjs.github.io/dist/hammer.min.js'></script>
+
     <!-- JQuery -->
     <script src="js/jQuery.js"></script>
 
     <!-- Custom JS -->
     <script defer src="js/main.js"></script>
+    <script src="http://localhost:8080/bundle.js"></script>
 </head>
 <body>
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
@@ -87,14 +91,38 @@
     </section>
 
     <!-- Listings View -->
-    <section id="listings" class="screen relative">
+    <section class="screen relative">
       <div class="felx wrap absolute left-0 top-0 ml-6 mt-12">
         <select id="search_city" class="px-5 py-3 bg-gray-900 text-white text-center rounded-md">
         </select>
       </div>
 
-      <div id="listings"></div>
+      <style>
+        /* #viewport {
+            width: 500px; height: 500px; background: #C7433E; border: 10px solid #ED5D52; margin: 100px auto 0; position: relative;
+        } */
+  
+        #viewport .stack {
+            width: 200px; height: 300px; position: absolute; top: 100px; left: 50%; margin-left: -100px; border-radius: 10px;
+        }
+  
+        #viewport li {
+            width: 200px; height: 300px; list-style: none; background: #fff; border-radius: 5px; position: absolute; top: 0; left: 0; box-shadow: 0 0 2px rgba(0,0,0,.2), 1px 1px 1px rgba(0,0,0,.2); line-height: 300px; text-align: center; font-size: 100px; border: 10px solid #ECECEC; box-sizing: border-box; cursor: default;
+        }
+  
+        #viewport li.in-deck:nth-child(3) {
+            top: 2px; transform: translate(2px, 2px) rotate(0.4deg);
+        }
+  
+        #viewport li.in-deck:nth-child(2) {
+            top: 4px; transform: translate(-4px, -2px) rotate(-1deg);
+        }
+      </style>
+  
+      <div id="viewport">
+        <ul id="listings" class="stack">
+        </ul>
+      </div>
     </section>
-    
 </body>
 </html>

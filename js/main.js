@@ -6,6 +6,34 @@ var booking = {
     days: 0,
 };
 
+document.addEventListener('DOMContentLoaded', function () {
+    var stack;
+
+    stack = window.swing.Stack();
+
+    [].forEach.call(document.querySelectorAll('.stack li'), function (targetElement) {
+        stack.createCard(targetElement);
+
+        targetElement.classList.add('in-deck');
+    });
+
+    stack.on('throwout', function (e) {
+        console.log(e.target.innerText || e.target.textContent, 'has been thrown out of the stack to the', e.throwDirection, 'direction.');
+
+        e.target.classList.remove('in-deck');
+    });
+
+    stack.on('throwin', function (e) {
+        console.log(e.target.innerText || e.target.textContent, 'has been thrown into the stack from the', e.throwDirection, 'direction.');
+
+        e.target.classList.add('in-deck');
+    });
+});
+
+var listings = {
+
+};
+
 var citys = [
     {
         "city": "Paris",
@@ -471,12 +499,13 @@ var citys = [
 // 
 // =================================================================
 
-function getData(file) {
+function getData(file, callBack) {
     $.ajax({
         url: file,
         type: "GET",
         success: function (result) {
-            return result;
+            // console.log(result);
+            callBack(result);
         },
         error: function (error) {
             console.log(error)
@@ -667,27 +696,34 @@ function view_home() {
 function createListing(listing) {
     // Listing template
     var template = `
-        <button type="button" class="">
-            ${listing.name}
-        </button>
+        <li>
+          <img src="${listing.fields.medium_url}" class="w-full mb-2">
+          <h3>${listing.fields.name}</h3>
+          <p>accommodates: ${listing.fields.accommodates}</p>
+        </li>
     `;
     // Return template
     return template;
 };
 
-function getListings(city) {
-    // $('#listings').html('');
-    var link = `https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features`;
-    var result = getData(link);
-    // var results = result.records;
-    console.log(result);
-    // var html = "";
-    // for (var i = 0; i < results.length; i++) {
-    //     html += createListing(results[i]);
-    // }
+function generateListings(result) {
+    // Reset
+    $('#listings').html('');
+    var listings = result.records;
+    console.log(listings)
+    var html = "";
+    for (var i = 0; i < listings.length; i++) {
+        html += createListing(listings[i]);
+    }
 
-    // $('#listings').append(html);
-};
+    // Add to html
+    $('#listings').append(html);
+}
+
+async function getListings(city) {
+    var link = `https://data.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings%40public&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features&refine.city=${city}`;
+    getData(link, generateListings);
+}
 
 function search() {
     var searchObject = '#search_city';
@@ -702,18 +738,20 @@ function search() {
     });
     $(searchObject).val(booking.location);
 
+    getListings(booking.location);
+
     // Detect change in select feild
     $(searchObject).change(function () {
         var value = $(this).val();
 
         // Update booking location
         booking.location = value;
+        getListings(booking.location);
     });
 };
 
 function view_listings() {
     search()
-    getListings(booking.location)
 };
 
 // =================================================================
