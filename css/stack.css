@@ -1,0 +1,33 @@
+
+#viewport .stack {
+    position: absolute; top: 140px; left: 50%; margin-left: -140px; border-radius: 14px;
+    width: 280px;
+    height: 430px;
+}
+
+#viewport li {
+    position: absolute; top: 0; left: 0; box-sizing: border-box; cursor: default;
+    width: 280px;
+    height: 430px;
+    /* shadow-xl */
+    /* box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.04), 0px 20px 25px rgba(0, 0, 0, 0.1); */
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+#viewport li.in-deck:nth-last-child(3) {
+    left: 35px;
+    opacity: 0.4;
+    filter: blur(1.5px);
+    border-radius: 14px;
+    height: 86%;
+    top: 7%;
+}
+
+#viewport li.in-deck:nth-last-child(2) {
+    left: 20px;
+    opacity: 0.45;
+    filter: blur(1.5px);
+    height: 92%;
+    top: 4%;
+}
