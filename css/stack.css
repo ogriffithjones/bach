@@ -15,7 +15,7 @@
     overflow: hidden;
 }
 
-#viewport li.in-deck:nth-last-child(3) {
+#viewport li.in-deck:nth-last-child(4) {
     left: 35px;
     opacity: 0.4;
     filter: blur(1.5px);
@@ -24,7 +24,7 @@
     top: 7%;
 }
 
-#viewport li.in-deck:nth-last-child(2) {
+#viewport li.in-deck:nth-last-child(3) {
     left: 20px;
     opacity: 0.45;
     filter: blur(1.5px);

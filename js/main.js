@@ -235,7 +235,10 @@ function createListing(listing) {
         <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover">
     `;
 
+    // Create the DOM element
     let element = document.createElement('li');
+    // Set the element data
+    $(element).data("recordid", listing.recordid);
     element.innerHTML = template;
 
     // Return template
@@ -254,72 +257,54 @@ function generateListings(num, start, location) {
     
         listings.properties = listings.properties.concat(records);
         listings.totalLoaded += records.length;
-        console.log(listings);
-
-        // Reset
-        $('#listings').html('');
+        console.log("adding to the total: " + records.length);
 
         // For each record create a listing element
         records.forEach((listing) => {
             var targetElement = createListing(listing);
             $('#listings').append(targetElement);
             // Add card element to the Stack.
-            stack.createCard(targetElement);
+            stack.createCard(targetElement, true);
             targetElement.classList.add('in-deck');
         });
     }
 
-function updateListings(location) {
+// Update the listings
+function updateListings(location, num) {
     var start = listings.totalLoaded + 1;
-    generateListings(10, start, location)
+    generateListings(num, start, location)
 }
 
-// function generateListings(result) {
-//     // Reset
-//     $('#listings').html('');
-
-//     var listings = result.records;
-//     console.log(listings);
-
-//     listings.forEach((listing) => {
-//         var targetElement = createListing(listing);
-//         $('#listings').append(targetElement);
-//         // Add card element to the Stack.
-//         stack.createCard(targetElement);
-//         targetElement.classList.add('in-deck');
-//     });
-
-//     // for (var i = 0; i < listings.length; i++) {
-//     //     var targetElement = createListing(listings[i]);
-//     //     stack.createCard(targetElement);
-//     //     // targetElement.classList.add('in-deck');
-//     //     $('#listings').append(targetElement);
-//     // }
-// }
-
-// async function getListings(city) {
-//     var link = `https://data.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings%40public&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features&refine.city=${city}`;
-//     getData(link, generateListings);
-// }
-
-function moveListing(key, array) {
-
-}
-
+// Event listners for card events e.g. swipes or taps
 function cardStackEvents() {
     stack.on('throwout', function (e) {
-        console.log(e.target.innerText || e.target.textContent, 'has been thrown out of the stack to the', e.throwDirection, 'direction.');
 
-        e.target.classList.remove('in-deck');
+        var numCards = document.querySelectorAll('.in-deck').length;
+        if (numCards < 6) {
+            updateListings(booking.location, 5);
+        }
     });
 
-    stack.on('throwin', function (e) {
-        console.log(e.target.innerText || e.target.textContent, 'has been thrown into the stack from the', e.throwDirection, 'direction.');
+    stack.on('throwoutright', function (e) {
+        for (listing of listings.properties) {
+            if (listing.recordid === $(e.target).data("recordid")) {
+                listings.likedProperties.push(listing);
+                e.target.remove();
+            }
+        }
+    });
 
-        e.target.classList.add('in-deck');
+    stack.on('throwoutleft', function (e) {
+        for (listing of listings.properties) {
+            if (listing.recordid === $(e.target).data("recordid")) {
+                listings.dislikedProperties.push(listing);
+                e.target.remove();
+            }
+        }
     });
 }
 
+// 
 function search() {
     var searchObject = '#search_city';
 
@@ -333,15 +318,18 @@ function search() {
     });
     $(searchObject).val(booking.location);
 
-    updateListings(booking.location);
+    updateListings(booking.location, 10);
 
     // Detect change in select feild
     $(searchObject).change(function () {
         var value = $(this).val();
 
+        // Reset listings
+        $('#listings').html('');
+
         // Update booking location
         booking.location = value;
-        updateListings(booking.location);
+        updateListings(booking.location, 10);
     });
 };
 
