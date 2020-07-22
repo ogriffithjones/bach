@@ -92,17 +92,26 @@
     </section>
 
     <!-- Listings View -->
-    <section id="viewListings" class="screen relative hidden">
-      <div class="felx wrap absolute left-0 top-0 ml-6 mt-12">
+    <section id="viewListings" class="screen hidden flex justify-center items-center">
+      <div class="felx wrap absolute left-0 top-0 ml-6 mt-12 z-10">
         <select id="search_city" class="px-5 py-3 bg-gray-900 text-white text-center rounded-md">
         </select>
       </div>
 
-      <h1 id="listingName"></h1>
+      <div class="absolute z-0 inset-0">
+        <div id="listingMap" class="h-1/2 top-0 left-0"></div>
+      </div>
 
-      <div id="viewport">
-        <ul id="listings" class="stack">
-        </ul>
+      <div id="viewport" class="z-10">
+        <div class="mb-4">
+          <h1 class="text-xl text-grey-900" id="listingName"></h1>
+          <h5 class="text-sm text-grey-600" id="listingInfo"></h5> 
+        </div>
+   
+        <div class="relative">
+          <ul id="listings" class="stack">
+          </ul>
+        </div>
       </div>
     </section>
 </body>

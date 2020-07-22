@@ -245,40 +245,66 @@ function createListing(listing) {
     return element;
 };
 
-function generateListings(num, start, location) {
+// Update the listings
+function updateListings(location, num) {
+    var start = listings.totalLoaded + 1;
     var link = `https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&rows=${num}&start=${start}&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features&refine.city=${location}`;
     getData(link, insertListings);
 }
 
-    // Callback Function
-    // Called when listings data is pulled from the api
-    function insertListings(result) {
-        var records = result.records;
-    
-        listings.properties = listings.properties.concat(records);
-        listings.totalLoaded += records.length;
-        console.log("adding to the total: " + records.length);
+// Init listings
+function initListings(location) {
+    var num = 10;
+    var start = 0;
+    var link = `https://public.opendatasoft.com/api/records/1.0/search/?dataset=airbnb-listings&q=&rows=${num}&start=${start}&facet=host_response_time&facet=host_response_rate&facet=host_verifications&facet=city&facet=country&facet=property_type&facet=room_type&facet=bed_type&facet=amenities&facet=availability_365&facet=cancellation_policy&facet=features&refine.city=${location}`;
+    getData(link, initListingsCallback);
+}
 
-        // For each record create a listing element
-        records.forEach((listing) => {
-            var targetElement = createListing(listing);
-            $('#listings').append(targetElement);
-            // Add card element to the Stack.
-            stack.createCard(targetElement, true);
-            targetElement.classList.add('in-deck');
-        });
-    }
+// Callback Function
+// Called when listings data is pulled from the api
+function insertListings(result) {
+    var records = result.records;
 
-// Update the listings
-function updateListings(location, num) {
-    var start = listings.totalLoaded + 1;
-    generateListings(num, start, location)
+    listings.properties = listings.properties.concat(records);
+    listings.totalLoaded += records.length;
+
+    // For each record create a listing element
+    records.forEach((listing) => {
+        var targetElement = createListing(listing);
+        $('#listings').prepend(targetElement);
+        // Add card element to the Stack.
+        stack.createCard(targetElement, true);
+        targetElement.classList.add('in-deck');
+    });
+}
+
+function initListingsCallback(result) {
+    insertListings(result);
+    updateCurrentCard();
+}
+
+function updateCurrentCard() {
+    var element = $('.in-deck:last-child').data('recordid');
+    var listing = listings.properties.find(obj => obj.recordid === element);
+
+    // Update content
+    $("#listingName").text(listing.fields.name)
+    $("#listingInfo").text(` ${listing.fields.beds} Beds • ${listing.fields.bathrooms} baths`)
+
+    // Update Map
+    listingMap.flyTo({
+        center: [
+            listing.fields.longitude,
+            listing.fields.latitude
+        ],
+        essential: true // this animation is considered essential with respect to prefers-reduced-motion
+    });
 }
 
 // Event listners for card events e.g. swipes or taps
 function cardStackEvents() {
     stack.on('throwout', function (e) {
-
+        updateCurrentCard();
         var numCards = document.querySelectorAll('.in-deck').length;
         if (numCards < 6) {
             updateListings(booking.location, 5);
@@ -318,7 +344,7 @@ function search() {
     });
     $(searchObject).val(booking.location);
 
-    updateListings(booking.location, 10);
+    initListings(booking.location);
 
     // Detect change in select feild
     $(searchObject).change(function () {
@@ -331,15 +357,26 @@ function search() {
         booking.location = value;
         updateListings(booking.location, 10);
     });
-};
+}
 
+var listingMap
 function view_listings() {
     // Hide the home view
     $("#viewListings").removeClass("hidden");
 
+    // Map
+    listingMap = new mapboxgl.Map({
+        // Set to light style and cetntre on the states
+        style: 'mapbox://styles/mapbox/light-v10',
+        center: [-90.0066, 40.7135],
+        zoom: 12,
+        container: 'listingMap',
+        antialias: true
+    });
+
     search();
     cardStackEvents();
-};
+}
 
 // =================================================================
 // 
@@ -349,7 +386,7 @@ function view_listings() {
 
 function nav() {
     var navObject = '#nav';
-};
+}
 
 // =================================================================
 // 
@@ -364,7 +401,7 @@ function App() {
     view_home();
     // Load nav systems
     nav();
-};
+}
 
 // Onload
 App();
