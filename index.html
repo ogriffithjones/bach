@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/stack.css">
     
     <!-- Mapbox -->
     <script src="https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js"></script>
@@ -22,9 +20,17 @@
     <!-- JQuery -->
     <script src="js/jQuery.js"></script>
 
+    <!-- jQuery Modal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+
     <!-- Custom JS -->
     <script defer src="js/main.js"></script>
     <script src="http://localhost:8080/bundle.js"></script>
+
+    <!-- Css -->
+    <link rel="stylesheet" href="css/stack.css">
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
   <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
@@ -93,14 +99,18 @@
 
     <!-- Listings View -->
     <section id="viewListings" class="screen hidden flex justify-center items-center">
-      <div class="felx wrap absolute left-0 top-0 ml-6 mt-12 z-10">
-        <select id="search_city" class="px-5 py-3 bg-gray-900 text-white text-center rounded-md">
+      <div class="felx wrap absolute left-0 top-0 ml-6 mt-8 z-10">
+        <select id="search_city" class="text-xs px-3 py-2 bg-gray-900 text-white text-center rounded-lg">
         </select>
+        <input id="search_guests" type="number" value="8" class="ml-1 text-xs px-2 py-2 w-8 bg-gray-900 text-white text-center rounded-full">
+        </input>
       </div>
 
-      <div class="absolute z-0 inset-0">
-        <div id="listingMap" class="h-1/2 top-0 left-0"></div>
+      <div class="absolute z-0 inset-0 top-0">
+        <div id="listingMap" class="h-full top-0 left-0"></div>
       </div>
+
+      <div class="absolute z-0 inset-x-0 bottom-0 bg-gray-100" style="height: 80vh; filter: blur(100px);"></div>
 
       <div id="viewport" class="z-10">
         <div class="mb-4">
@@ -114,5 +124,20 @@
         </div>
       </div>
     </section>
+
+    <div id="listingModal" class="modal z-30">
+      <div>
+        <h1 id="listingModal_name"></h1>
+        <h5 id="listingModal_price"></h5>
+      </div>
+      <div>
+        <h4 id="listingModal_descTitle"></h4>
+        <p id="listingModal_desc"></p>
+      </div>
+      <div>
+        <h4 id="listingModal_thingsTitle"></h4>
+        <p id="listingModal_things"></p>
+      </div>
+    </div>
 </body>
 </html>

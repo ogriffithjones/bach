@@ -24,6 +24,7 @@
     cursor: default;
     width: 280px;
     height: 430px;
+    background-color: floralwhite;
     /* shadow-xl */
     /* box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.04), 0px 20px 25px rgba(0, 0, 0, 0.1); */
     border-radius: 14px;
@@ -45,4 +46,8 @@
     filter: blur(1.5px);
     height: 92%;
     top: 4%;
+}
+
+.jquery-modal {
+    z-index: 10;
 }

@@ -3,6 +3,7 @@ const stack = window.swing.Stack();
 
 // Application Variables
 var booking = {
+    listing: [],
     location: "",
     guests: 0,
     dates: "",
@@ -232,7 +233,9 @@ function view_home() {
 function createListing(listing) {
     // Listing template
     var template = `
-        <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover">
+        <a href="#listingModal" rel="modal:open">
+            <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover">
+        </a>
     `;
 
     // Create the DOM element
@@ -291,14 +294,23 @@ function updateCurrentCard() {
     $("#listingName").text(listing.fields.name)
     $("#listingInfo").text(` ${listing.fields.beds} Beds • ${listing.fields.bathrooms} baths`)
 
+    if (window.innerWidth < 600){
+        var offset = [150, -300]
+    } else {
+        var offset = [300, -300]
+    }
+
     // Update Map
     listingMap.flyTo({
+        offset: offset,
         center: [
             listing.fields.longitude,
             listing.fields.latitude
         ],
         essential: true // this animation is considered essential with respect to prefers-reduced-motion
     });
+
+    listingMarker.setLngLat([listing.fields.longitude, listing.fields.latitude])
 }
 
 // Event listners for card events e.g. swipes or taps
@@ -327,6 +339,13 @@ function cardStackEvents() {
                 e.target.remove();
             }
         }
+    });
+
+    $('#listings').click(function(){
+        var element = $('.in-deck:last-child').data('recordid');
+        var listing = listings.properties.find(obj => obj.recordid === element);
+
+        $("#listingModal_name").text(`${listing.fields.name}`)
     });
 }
 
@@ -360,6 +379,7 @@ function search() {
 }
 
 var listingMap
+var listingMarker
 function view_listings() {
     // Hide the home view
     $("#viewListings").removeClass("hidden");
@@ -373,6 +393,9 @@ function view_listings() {
         container: 'listingMap',
         antialias: true
     });
+    listingMarker = new mapboxgl.Marker()
+        .setLngLat([12.550343, 55.665957])
+        .addTo(listingMap);
 
     search();
     cardStackEvents();
