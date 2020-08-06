@@ -234,7 +234,7 @@ function createListing(listing) {
     // Listing template
     var template = `
         <a href="#listingModal" rel="modal:open">
-            <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover">
+            <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover" style="pointer-events: none;">
         </a>
     `;
 
