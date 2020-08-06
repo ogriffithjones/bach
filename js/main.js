@@ -345,7 +345,12 @@ function cardStackEvents() {
         var element = $('.in-deck:last-child').data('recordid');
         var listing = listings.properties.find(obj => obj.recordid === element);
 
-        $("#listingModal_name").text(`${listing.fields.name}`)
+        var price =  listing.fields.price * booking.days;
+
+        $("#listingModal_name").text(`${listing.fields.name}`);
+        $("#listingModal_price").text(`${price}`);
+        $("#listingModal_descTitle").text(`${listing.fields.host_location}`);
+        $("#listingModal_desc").text(`${listing.fields.description}`);
     });
 }
 
