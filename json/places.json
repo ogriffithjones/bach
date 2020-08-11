@@ -1,0 +1,54 @@
+[
+    {
+        "id": 1,
+        "name": "",
+        "desc": "",
+        "price": 0,
+        "min-days": 1,
+        "max-days": 5,
+        "location": {
+            "city": "San Francisco",
+            "lat": 22,
+            "long": 34
+        },
+        "thumbnail": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
+        "extras":[
+            {
+                "name": "Food",
+                "desc": "About Food",
+                "price": 600
+            },
+            {
+                "name": "Food",
+                "desc": "About Food",
+                "price": 600
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "name": "",
+        "desc": "",
+        "price": 0,
+        "min-days": 1,
+        "max-days": 5,
+        "location": {
+            "city": "San Francisco",
+            "lat": 22,
+            "long": 34
+        },
+        "thumbnail": "https://images.unsplash.com/photo-1530479920821-9199623d027f?ixlib=rb-1.2.1&auto=format&fit=crop&w=975&q=80",
+        "extras":[
+            {
+                "name": "Food",
+                "desc": "About Food",
+                "price": 600
+            },
+            {
+                "name": "Food",
+                "desc": "About Food",
+                "price": 600
+            }
+        ]
+    }
+]
