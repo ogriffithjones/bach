@@ -4,8 +4,9 @@
         "name": "",
         "desc": "",
         "price": 0,
-        "min-days": 1,
-        "max-days": 5,
+        "beds": 1,
+        "minDays": 1,
+        "maxDays": 5,
         "location": {
             "city": "San Francisco",
             "lat": 22,
@@ -30,8 +31,9 @@
         "name": "",
         "desc": "",
         "price": 0,
-        "min-days": 1,
-        "max-days": 5,
+        "minDays": 3,
+        "beds": 3,
+        "maxDays": 10,
         "location": {
             "city": "San Francisco",
             "lat": 22,

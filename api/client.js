@@ -46,11 +46,18 @@ class Client {
         return result.find(obj => obj.id === id);
     }
 
-    filterCity(result, filter) {
-        return result.filter(function (obj) {
-            return obj.location.city === filter
+    // filterCity(result, filter) {
+    //     return result.filter(function (obj) {
+    //         return obj.location.city === filter
+    //     })
+	// }
+	
+	filterResult(result, filter) {
+		console.log(filter)
+		return result.filter(function (obj) {
+			return obj.location.city === filter.location && obj.minDays <= filter.nights && filter.nights <= obj.maxDays && obj.beds <= filter.guests 
         })
-    }
+	}
 
     get(options) {
 		return new Promise((resolve, reject) => {
@@ -61,7 +68,7 @@ class Client {
                         if(options.id){
                             return(this.filterId(result, options.id));
                         } else {
-                            return(this.filterCity(result, options.filter));
+                            return(this.filterResult(result, options.filter));
                         }
                     })
                 );

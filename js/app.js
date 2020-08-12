@@ -99,19 +99,24 @@ class App {
             listing: [],
             location: "",
             guests: 0,
-            dates: "",
+            dates: {},
             nights: 0,
         },
+        this.listings = [],
         this.citys = [],
-        this.datepicker
+        this.datepicker,
+        this.listingsMap = {
+            marker: {},
+            map: {}
+        }
     };
 
     init() {
         this.loadCitys()
-        this.view_home();
+        this.viewHome();
     };
 
-    view_home() {
+    viewHome() {
         // Find the date picker input
         var input = document.getElementById('dates');
         // Setup the date input for the HotelDatepicker app
@@ -197,7 +202,7 @@ class App {
             // Correctly format location and split off the city name
             var location = $("input.mapboxgl-ctrl-geocoder--input").val();
             var city = location.split(',')[0];
-            
+
             // Check the city is an accepted location
             if (this.citys.filter(p => p.city == city).length >= 1) {
                 // Set the booking location to the city name
@@ -216,20 +221,99 @@ class App {
 
             // Set the number of days into the booking
             // Call the days between function to calculate the days between the two dates
-            this.booking.days = this.daysBetween(this.booking.dates[0], this.booking.dates[1]);
+            this.booking.nights = this.daysBetween(this.booking.dates[0], this.booking.dates[1]);
 
             // Run the listnigs view
-            this.view_listings()
+            this.viewListings()
         } catch (err) {
             alert(err.message);
         };
-    };
+    }
+
+    createListing(listing) {
+        // Listing template
+        var template = `
+            <a href="#listingModal" rel="modal:open">
+                <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover" style="pointer-events: none;">
+            </a>
+        `;
+    
+        // Create the DOM element
+        let element = document.createElement('li');
+        // Set the element data
+        $(element).data("recordid", listing.recordid);
+        element.innerHTML = template;
+    
+        // Return template
+        return element;
+    }
+
+    loadListings() {
+        places.getPlaces({filter: {location: this.booking.location, nights: this.booking.nights, guests: this.booking.guests}}).then(function(data) {
+            // data.forEach((listing) => {
+            //     if (listing.m)
+            // })
+            // this.insertListings()
+            console.log(data)
+        })
+    }
+
+    insertListings() {
+        console.log("done")
+    }
+
+    // Home search function
+    search() {
+        var searchObject = '#search_city';
+    
+        // Fill select feild with citys
+        // 
+        $.each(this.citys, function (i, city) {
+            $(searchObject).append($('<option>', {
+                value: city.city,
+                text: city.city
+            }));
+        });
+        $(searchObject).val(this.booking.location);
+    
+        this.loadListings()
+    
+        // Detect change in select feild
+        $(searchObject).change(function () {
+            var value = $(this).val();
+    
+            // Reset listings
+            $('#listings').html('');
+    
+            // Update booking location
+            this.booking.location = value;
+            updateListings(this.booking.location, 10);
+        });
+    }
 
     // Hide the home screen
     // Then setup a listing cards
-    view_listings() {
+    viewListings() {
         // Hide the home view
         $("#home").addClass("hidden");
+        // Unhide the listings view
+        $("#viewListings").removeClass("hidden");
+
+        // Init the lisitngs map
+        this.listingsMap.map = new mapboxgl.Map({
+            // Set to light style and cetntre on the states
+            style: 'mapbox://styles/mapbox/light-v10',
+            center: [-90.0066, 40.7135],
+            zoom: 12,
+            container: 'listingMap',
+            antialias: true
+        });
+        this.listingsMap.marker = new mapboxgl.Marker()
+            .setLngLat([12.550343, 55.665957])
+            .addTo(this.listingsMap.map);
+
+        // Run the listings functions
+        this.search();
     }
 }
 
