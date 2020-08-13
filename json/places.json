@@ -1,9 +1,9 @@
 [
     {
         "id": 1,
-        "name": "",
+        "name": "Home",
         "desc": "",
-        "price": 0,
+        "price": 22.22,
         "beds": 1,
         "minDays": 1,
         "maxDays": 5,
@@ -15,22 +15,18 @@
         "thumbnail": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1350&q=80",
         "extras":[
             {
-                "name": "Food",
-                "desc": "About Food",
-                "price": 600
+                "name": "Pool"
             },
             {
-                "name": "Food",
-                "desc": "About Food",
-                "price": 600
+                "name": "BBQ"
             }
         ]
     },
     {
         "id": 2,
-        "name": "",
+        "name": "Luxury House",
         "desc": "",
-        "price": 0,
+        "price": 300.00,
         "minDays": 3,
         "beds": 3,
         "maxDays": 10,
@@ -42,14 +38,13 @@
         "thumbnail": "https://images.unsplash.com/photo-1530479920821-9199623d027f?ixlib=rb-1.2.1&auto=format&fit=crop&w=975&q=80",
         "extras":[
             {
-                "name": "Food",
-                "desc": "About Food",
-                "price": 600
+                "name": "Spa"
             },
             {
-                "name": "Food",
-                "desc": "About Food",
-                "price": 600
+                "name": "Extra Beds"
+            },
+            {
+                "name": "Cental City"
             }
         ]
     }

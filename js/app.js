@@ -102,13 +102,13 @@ class App {
             dates: {},
             nights: 0,
         },
-        this.listings = [],
-        this.citys = [],
-        this.datepicker,
-        this.listingsMap = {
-            marker: {},
-            map: {}
-        }
+            this.listings = [],
+            this.citys = [],
+            this.datepicker,
+            this.listingsMap = {
+                marker: {},
+                map: {}
+            }
     };
 
     init() {
@@ -223,8 +223,9 @@ class App {
             // Call the days between function to calculate the days between the two dates
             this.booking.nights = this.daysBetween(this.booking.dates[0], this.booking.dates[1]);
 
-            // Run the listnigs view
-            this.viewListings()
+            // Try loading in lisitngs, Will tell the user if any errors occour with their inputs
+            this.loadListings({ first: true });
+
         } catch (err) {
             alert(err.message);
         };
@@ -232,40 +233,109 @@ class App {
 
     createListing(listing) {
         // Listing template
+        var extras = ``;
+        listing.extras.forEach((extra) => {
+            extras += `<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#${extra.name}</span>`
+        });
+
         var template = `
-            <a href="#listingModal" rel="modal:open">
-                <img src="${listing.fields.xl_picture_url}" class="h-full pointer-events-none object-cover" style="pointer-events: none;">
+            <a id="${listing.id}" href="#listingModal" rel="modal:open">
+                <img class="w-full h-64 object-cover" src="${listing.thumbnail}">
+                <div class="px-6 py-4">
+                    <div class="font-bold text-xl mb-2">${listing.name}</div>
+                    <p class="text-gray-700 text-base">
+                    ${listing.price} /night 
+                    </p>
+                </div>
+                <div class="px-6 py-4">
+                    ${extras}
+                </div>
             </a>
         `;
-    
+
         // Create the DOM element
-        let element = document.createElement('li');
-        // Set the element data
-        $(element).data("recordid", listing.recordid);
+        let element = document.createElement('div');
+
+        // Set the click listner
+        // element.addEventListener('click', function () {
+        //     this.listingModal(listing.id);
+        // }, false);
+
+        element.addEventListener('click', () => {
+            this.listingModal(listing.id);
+        }, false);
+
+        element.addEventListener('mouseover', () => {
+            console.log("yeet")
+
+            if (window.innerWidth < 600){
+                var offset = [150, -300]
+            } else {
+                var offset = [300, -300]
+            }
+
+            // Update Map
+            this.listingsMap.map.flyTo({
+                offset: offset,
+                center: [
+                    listing.location.lat,
+                    listing.location.long
+                ],
+                essential: true // this animation is considered essential with respect to prefers-reduced-motion
+            });
+
+            this.listingsMap.marker.setLngLat([listing.location.lat, listing.location.long])
+        }, false);
+
         element.innerHTML = template;
-    
+
         // Return template
         return element;
     }
 
-    loadListings() {
-        places.getPlaces({filter: {location: this.booking.location, nights: this.booking.nights, guests: this.booking.guests}}).then(function(data) {
-            // data.forEach((listing) => {
-            //     if (listing.m)
-            // })
-            // this.insertListings()
-            console.log(data)
-        })
+    listingModal(id) {
+        places.getPlace({ id: id }).then((listing) => {
+            console.log(listing);
+            var price = listing.price * this.booking.nights;
+
+            $("#listingModal_name").text(`${listing.name}`);
+            $("#listingModal_price").text(`${price}`);
+            $("#listingModal_descTitle").text(`${listing.location.city}`);
+            $("#listingModal_desc").text(`${listing.desc}`);
+        });
+    }
+
+    loadListings(options) {
+        places.getPlaces({ filter: { location: this.booking.location, nights: this.booking.nights, guests: this.booking.guests } })
+            .then((data) => {
+                if (data.length == 0) {
+                    // If no results are found tell the user
+                    alert("No Results Found!")
+                } else {
+                    // If this is the first time loading, then run the viewListings function
+                    if (options.first) {
+                        this.viewListings()
+                    }
+                    // Add the listings to this class
+                    this.listings = data;
+                    // Insert the listrings from the class into the DOM
+                    this.insertListings();
+                }
+            })
     }
 
     insertListings() {
-        console.log("done")
+        this.listings.forEach((listing) => {
+            var targetElement = this.createListing(listing);
+            $('#listings').append(targetElement);
+            targetElement.classList.add('w-full', 'md:w-1/2', 'lg:w-1/3', 'rounded', 'shadow-lg', 'bg-white', 'mx-5', 'my-3');
+        })
     }
 
     // Home search function
     search() {
         var searchObject = '#search_city';
-    
+
         // Fill select feild with citys
         // 
         $.each(this.citys, function (i, city) {
@@ -275,16 +345,16 @@ class App {
             }));
         });
         $(searchObject).val(this.booking.location);
-    
+
         this.loadListings()
-    
+
         // Detect change in select feild
         $(searchObject).change(function () {
             var value = $(this).val();
-    
+
             // Reset listings
             $('#listings').html('');
-    
+
             // Update booking location
             this.booking.location = value;
             updateListings(this.booking.location, 10);
