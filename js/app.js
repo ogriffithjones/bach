@@ -8,8 +8,8 @@ mapboxgl.accessToken = 'pk.eyJ1Ijoib2dyaWZmaXRoam9uZXMiLCJhIjoiY2o0dGZhdWZyMDdhd
 var map = new mapboxgl.Map({
     // Set to light style and cetntre on the states
     style: 'mapbox://styles/mapbox/light-v10',
-    center: [-90.0066, 40.7135],
-    zoom: 3.5,
+    center: [172.139012, -41.607228],
+    zoom: 6,
     pitch: 45,
     bearing: -17.6,
     container: 'map',
@@ -94,6 +94,7 @@ $("#booking-form").on('submit', function (e) {
 
 // Setup App Instance
 class App {
+    // Setup the current app booking, listings and other objects
     constructor() {
         this.booking = {
             listing: [],
@@ -111,11 +112,15 @@ class App {
             }
     };
 
+    // Initalise the app
     init() {
-        this.loadCitys()
+        // Load in the citys
+        this.loadCitys();
+        // Set the current view to the home
         this.viewHome();
     };
 
+    // View and setup the home view
     viewHome() {
         // Find the date picker input
         var input = document.getElementById('dates');
@@ -177,6 +182,7 @@ class App {
     // Returns a features array to be inserted into the map
     getCityPoints(citys) {
         var features = [];
+        // For each city create a marker / feature point
         $.each(citys, function (i, val) {
             features.push(createMapPoint(val));
         })
@@ -231,23 +237,26 @@ class App {
         };
     }
 
+    // Create a listing based on the html template
     createListing(listing) {
         // Listing template
         var extras = ``;
+        // For each listing extras create a tab to be inserted to the listing
         listing.extras.forEach((extra) => {
             extras += `<span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">#${extra.name}</span>`
         });
 
+        // Setup the listing template and insert data
         var template = `
             <a id="${listing.id}" href="#listingModal" rel="modal:open">
                 <img class="w-full h-64 object-cover" src="${listing.thumbnail}">
-                <div class="px-6 py-4">
+                <div class="px-3 py-4">
                     <div class="font-bold text-xl mb-2">${listing.name}</div>
                     <p class="text-gray-700 text-base">
                     ${listing.price} /night 
                     </p>
                 </div>
-                <div class="px-6 py-4">
+                <div class="px-3 py-4">
                     ${extras}
                 </div>
             </a>
@@ -256,58 +265,80 @@ class App {
         // Create the DOM element
         let element = document.createElement('div');
 
-        // Set the click listner
-        // element.addEventListener('click', function () {
-        //     this.listingModal(listing.id);
-        // }, false);
-
+        // Add a click listner to the lisiting
         element.addEventListener('click', () => {
+            // On click run the lisitng modal function
             this.listingModal(listing.id);
         }, false);
 
+        // Add a mouse over listner to the listing
         element.addEventListener('mouseover', () => {
-            console.log("yeet")
-
-            if (window.innerWidth < 600){
-                var offset = [150, -300]
+            // Setup off set for mobile or desktop
+            if (window.innerWidth < 600) {
+                var offset = [150, -550]
             } else {
-                var offset = [300, -300]
+                var offset = [250, -550]
             }
 
-            // Update Map
+            // Update Map position on hover
             this.listingsMap.map.flyTo({
                 offset: offset,
                 center: [
-                    listing.location.lat,
-                    listing.location.long
+                    listing.location.long,
+                    listing.location.lat
                 ],
                 essential: true // this animation is considered essential with respect to prefers-reduced-motion
             });
 
-            this.listingsMap.marker.setLngLat([listing.location.lat, listing.location.long])
+            // Move the marker to current listing
+            this.listingsMap.marker.setLngLat([listing.location.long, listing.location.lat])
         }, false);
 
+        // Set the listing element to include the template
         element.innerHTML = template;
 
         // Return template
         return element;
     }
 
+    // Set the modal data to the current listing
     listingModal(id) {
+        // Get the current listing
         places.getPlace({ id: id }).then((listing) => {
-            console.log(listing);
+            // Get the price for the num nights
             var price = listing.price * this.booking.nights;
 
+            // Reset menu
+            $('#listingModal_menu').html('');
+            // For each menu item add a tab element with the menu items name and price
+            listing.menu.forEach((item) => {
+                // Setup the tap element
+                let targetElement = document.createElement('div');
+                // Setup the html content to be templated
+                targetElement.innerHTML = `<p>${item.name} | ${item.price}</p>`;
+                // Append the menu item into the menu area on the modal
+                $('#listingModal_menu').append(targetElement);
+                // Attach the correct element classes
+                targetElement.classList.add('px-3', 'py-2', 'bg-gray-200', 'my-2', 'mx-3');
+            })
+
+            // Set the name on the modal
             $("#listingModal_name").text(`${listing.name}`);
-            $("#listingModal_price").text(`${price}`);
+            // Set the price to the correct dp
+            $("#listingModal_price").text(`$${price.toFixed(2)} for ${this.booking.nights} night(s)`);
+            // Show the location / city of the listing
             $("#listingModal_descTitle").text(`${listing.location.city}`);
+            // Insert the description
             $("#listingModal_desc").text(`${listing.desc}`);
         });
     }
 
+    // Load the lisitngs using filters and options
     loadListings(options) {
+        // Get all listings with the correct filters to match the current search
         places.getPlaces({ filter: { location: this.booking.location, nights: this.booking.nights, guests: this.booking.guests } })
             .then((data) => {
+                // If there arent any listings error and tell the user
                 if (data.length == 0) {
                     // If no results are found tell the user
                     alert("No Results Found!")
@@ -316,7 +347,7 @@ class App {
                     if (options.first) {
                         this.viewListings()
                     }
-                    // Add the listings to this class
+                    // Add the listings
                     this.listings = data;
                     // Insert the listrings from the class into the DOM
                     this.insertListings();
@@ -324,40 +355,70 @@ class App {
             })
     }
 
+    // Insert listings into the DOM
     insertListings() {
+        // For each lisiting
         this.listings.forEach((listing) => {
+            // Create a listing element
             var targetElement = this.createListing(listing);
+            // Append the lisitng card / element into the DOM
             $('#listings').append(targetElement);
-            targetElement.classList.add('w-full', 'md:w-1/2', 'lg:w-1/3', 'rounded', 'shadow-lg', 'bg-white', 'mx-5', 'my-3');
+            // Attach the correct classes
+            targetElement.classList.add('w-full', 'md:w-1/2', 'lg:w-1/3', 'px-5', 'py-3');
         })
     }
+
+
+    // Update the loaction
+    updateLocation(city) {
+        // Set the booking to the new location
+        this.booking.location = city;
+
+        // Reset listings
+        $('#listings').html('');
+        this.listings = [];
+        // Update booking location
+        this.loadListings({first: false});
+    }
+
+    // Update the number of guests
+    updateGuests(guests) {
+        // Set the booking to the new number of guests
+        this.booking.guests = guests;
+
+        // Reset listings
+        $('#listings').html('');
+        this.listings = [];
+        // Update booking location
+        this.loadListings({first: false});
+    }
+
 
     // Home search function
     search() {
         var searchObject = '#search_city';
 
-        // Fill select feild with citys
-        // 
+        // For each city
         $.each(this.citys, function (i, city) {
+            // Apend the city to the select options
             $(searchObject).append($('<option>', {
                 value: city.city,
                 text: city.city
             }));
         });
+        // Set the current option to the booking location / city
         $(searchObject).val(this.booking.location);
 
-        this.loadListings()
+        // Add an event listner to the select input
+        // On change update the current location and reload listings
+        document.getElementById('search_city').addEventListener('change', (res) => {
+            this.updateLocation(res.target.value)
+        });
 
-        // Detect change in select feild
-        $(searchObject).change(function () {
-            var value = $(this).val();
-
-            // Reset listings
-            $('#listings').html('');
-
-            // Update booking location
-            this.booking.location = value;
-            updateListings(this.booking.location, 10);
+        // Add an event listner to the guest number input
+        // On change update the current guests and reload listings
+        document.getElementById('search_guests').addEventListener('change', (res) => {
+            this.updateGuests(res.target.value)
         });
     }
 
@@ -373,11 +434,12 @@ class App {
         this.listingsMap.map = new mapboxgl.Map({
             // Set to light style and cetntre on the states
             style: 'mapbox://styles/mapbox/light-v10',
-            center: [-90.0066, 40.7135],
-            zoom: 12,
+            center: [172.139012, -41.607228],
+            zoom: 20,
             container: 'listingMap',
             antialias: true
         });
+        // Setup a marker on the map
         this.listingsMap.marker = new mapboxgl.Marker()
             .setLngLat([12.550343, 55.665957])
             .addTo(this.listingsMap.map);
@@ -387,13 +449,6 @@ class App {
     }
 }
 
+// Setup and init the app class
 const app = new App();
 app.init();
-
-// places.getPlace({id: 1}).then(function(data) {
-//     console.log(data);
-// })
-
-// places.getPlaces({filter: "San Francisco"}).then(function(data) {
-//     console.log(data);
-// })

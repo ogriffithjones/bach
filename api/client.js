@@ -45,15 +45,8 @@ class Client {
     filterId (result, id) {
         return result.find(obj => obj.id === id);
     }
-
-    // filterCity(result, filter) {
-    //     return result.filter(function (obj) {
-    //         return obj.location.city === filter
-    //     })
-	// }
 	
 	filterResult(result, filter) {
-		console.log(filter)
 		return result.filter(function (obj) {
 			return obj.location.city === filter.location && obj.minDays <= filter.nights && filter.nights <= obj.maxDays && obj.beds <= filter.guests 
         })
